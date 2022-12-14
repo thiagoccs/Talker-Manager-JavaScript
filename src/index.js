@@ -12,6 +12,10 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+app.listen(PORT, () => {
+  console.log('Online');
+});
+
 app.get('/talker', async (req, res) => {
   try {
     const talkers = await readFile();
@@ -21,6 +25,16 @@ app.get('/talker', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log('Online');
+app.get('/talker/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const talkers = await readFile();
+    const talker = talkers.find((talkerGET) => talkerGET.id === Number(id));
+    if (!talker) {
+      return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    }
+    return res.status(200).json(talker);
+  } catch (error) {
+    console.log('deu ruim');
+  }
 });
