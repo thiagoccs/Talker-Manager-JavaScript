@@ -42,6 +42,20 @@ app.get('/talker/:id', async (req, res) => {
 
 app.post('/login', (req, res) => {
   const getToken = token(16);
+  const { email, password } = req.body;
+  const validationEmail = /\S+@\S+\.\S+/;
+
+  if (!email) res.status(400).json({ message: 'O campo "email" é obrigatório' });
+  
+  if (!validationEmail.test(email)) {
+    res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
+  }
+  if (!password) res.status(400).json({ message: 'O campo "password" é obrigatório' });
+  
+  if (password.length < 6) {
+    res.status(400).json({ message: 'O "password" deve ter pelo menos 6 caracteres' });
+  }
+
   res.status(200).json({
     token: getToken,
   });
