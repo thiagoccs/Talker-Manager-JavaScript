@@ -1,5 +1,6 @@
 const express = require('express');
 const { readFile } = require('./utils/readFile');
+const { token } = require('./utils/token');
 
 const app = express();
 app.use(express.json());
@@ -37,4 +38,11 @@ app.get('/talker/:id', async (req, res) => {
   } catch (error) {
     console.log('deu ruim');
   }
+});
+
+app.post('/login', (req, res) => {
+  const getToken = token(16);
+  res.status(200).json({
+    token: getToken,
+  });
 });
