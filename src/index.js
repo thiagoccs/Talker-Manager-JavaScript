@@ -114,3 +114,11 @@ talkRateValidation, async (req, res) => {
     talkerChanged,
     );
 });
+
+app.delete('/talker/:id', tokenValidation, async (req, res) => {
+  const { id } = req.params;
+  const talkers = await readFile();
+  const talkersUnselected = talkers.filter((talker) => talker.id !== Number(id));
+  await writeFile(talkersUnselected);
+  return res.status(204).json('');
+});
