@@ -39,7 +39,7 @@ app.get('/talker/search', tokenValidation, async (req, res) => {
   const talkers = await readFile();
   const talkerByName = talkers
     .filter((talker) => talker.name.toLowerCase().includes(q.toLowerCase()));
-
+  console.log(talkerByName);
   return res.status(200).json(talkerByName);
 });
 
