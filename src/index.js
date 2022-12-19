@@ -90,3 +90,27 @@ talkRateValidation, async (req, res) => {
     newTalker,
    );
 });
+
+app.put('/talker/:id',
+tokenValidation,
+nameValidation,
+ageValidation,
+talkValidation,
+talkRateValidation, async (req, res) => {
+  const { id } = req.params;
+  const { name, age, talk: { watchedAt, rate } } = req.body;
+  const talkerChanged = {
+    id: Number(id),
+    name,
+    age,
+    talk: { watchedAt, rate },
+  };
+  const talkers = await readFile();
+  const talkersUnselected = talkers.filter((talker) => talker.id !== Number(id));
+  const newTalkers = [...talkersUnselected, talkerChanged];
+  await writeFile(newTalkers);
+  
+  return res.status(200).json(
+    talkerChanged,
+    );
+});
