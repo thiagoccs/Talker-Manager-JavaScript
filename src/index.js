@@ -1,6 +1,13 @@
 const express = require('express');
 const { readFile } = require('./utils/readFile');
+const { writeFile } = require('./utils/writeFile');
 const { token } = require('./utils/token');
+const { tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  talkRateValidation,
+} = require('./middlewares/talkerPostValidation');
 
 const app = express();
 app.use(express.json());
@@ -48,15 +55,38 @@ app.post('/login', (req, res) => {
   if (!email) res.status(400).json({ message: 'O campo "email" é obrigatório' });
   
   if (!validationEmail.test(email)) {
-    res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
+    return res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
   }
   if (!password) res.status(400).json({ message: 'O campo "password" é obrigatório' });
   
   if (password.length < 6) {
-    res.status(400).json({ message: 'O "password" deve ter pelo menos 6 caracteres' });
+    return res.status(400).json({ message: 'O "password" deve ter pelo menos 6 caracteres' });
   }
 
-  res.status(200).json({
-    token: getToken,
-  });
+  res.status(200).json({ token: getToken });
+});
+
+app.post('/talker',
+tokenValidation,
+nameValidation,
+ageValidation,
+talkValidation,
+talkRateValidation, async (req, res) => {
+  const talkers = await readFile();
+  const { name, age, talk } = req.body;
+  const { watchedAt, rate } = talk;
+  const newTalker = {
+    id: talkers.length + 1,
+    name,
+    age,
+    talk: {
+      watchedAt,
+      rate,
+    },
+  };
+  const newTalkers = [...talkers, newTalker];
+  await writeFile(newTalkers);
+  res.status(201).json(
+    newTalker,
+   );
 });
