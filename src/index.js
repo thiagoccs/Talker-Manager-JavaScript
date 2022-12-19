@@ -33,6 +33,16 @@ app.get('/talker', async (req, res) => {
   }
 });
 
+app.get('/talker/search', tokenValidation, async (req, res) => {
+  const { q } = req.query;
+  console.log(q);
+  const talkers = await readFile();
+  const talkerByName = talkers
+    .filter((talker) => talker.name.toLowerCase().includes(q.toLowerCase()));
+
+  return res.status(200).json(talkerByName);
+});
+
 app.get('/talker/:id', async (req, res) => {
   const { id } = req.params;
   try {
